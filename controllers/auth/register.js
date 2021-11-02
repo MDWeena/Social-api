@@ -6,15 +6,15 @@ const randomstring = require('randomstring')
 const createNewUser = async (req, res, next) =>{
     try {
      let { email, username, password, gender}   = req.body;
-if(!email || !gender || !username || !password) return res.status(400).json({msg: 'All fields are required'})
+if(!email || !gender || !username || !password) return res.status(400).json({success: false, msg: 'All fields are required'})
 
      let newUsername = username.toLowerCase().replace(/ /g, '')
     
         const user_name = await User.findOne({username: newUsername});
-        if(user_name) return res.status(400).json({msg: 'Username already exists'})
+        if(user_name) return res.status(400).json({success: false, msg: 'Username already exists'})
 
         const user_email = await User.findOne({email});
-        if(user_email) return res.status(400).json({msg: 'Email already exists'})
+        if(user_email) return res.status(400).json({success: false, msg: 'Email already exists'})
 
         let hashedPassword = bcryptjs.hashSync(password, 12);
        
@@ -33,7 +33,7 @@ if(!email || !gender || !username || !password) return res.status(400).json({msg
 
         await welcomeEmail(req, newUser.username, newUser.email, newUser.secretToken)
 
-        res.status(201).json({msg: 'User saved successfully', user: newUser})
+        res.status(201).json({ success: true, msg: 'User saved successfully', user: newUser})
 
     } catch (err) {
        res.status(500).json({message: err.message})
